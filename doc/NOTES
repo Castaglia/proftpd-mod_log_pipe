@@ -1,0 +1,24 @@
+
+Piped logging, a la Apache.  Since we now ship mod_exec, it seems only fair
+to ship a logging module which forks/execs external logging processes.
+Hopefully this will make replication mechanisms easier for those attempting to
+implement such things via FIFO logging, as well as support better log
+rotation (e.g. via rotatelogs or cronolog or whatever).
+
+Configuration
+
+  PipedLog logFormatName /path/to/command command-opts
+
+Implementation
+
+  May need to add a log_name field to the pr_log_event_t struct
+  (in include/log.h), so that we know the name of the log, e.g. for
+  ExtendedLog LogFormat names.  The mod_log_pipe module can use a table
+  to record LogFormat names to command pipes (popen(3)?).
+
+  Other than that, having log listeners for PR_LOG_TYPE_EXTLOG events
+  should suffice.
+
+Questions
+
+  What about for TransferLog, SystemLog, TraceLog (e.g. for rotation)?
